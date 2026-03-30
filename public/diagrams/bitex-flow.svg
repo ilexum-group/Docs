@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 280" width="300" height="280">
+  <!-- Bitex Data Flow -->
+  <text x="150" y="15" font-family="system-ui,sans-serif" font-size="13" font-weight="600" fill="#f7fafc" text-anchor="middle">Bitex Data Flow</text>
+
+  <rect x="90" y="25" width="120" height="35" rx="4" fill="#2d3748" stroke="#4a5568" stroke-width="1.5"/>
+  <text x="150" y="48" font-family="system-ui,sans-serif" font-size="11" fill="#f7fafc" text-anchor="middle">Disk / Device</text>
+
+  <line x1="150" y1="60" x2="150" y2="80" stroke="#718096" stroke-width="1.5" marker-end="url(#a1)"/>
+
+  <rect x="30" y="80" width="240" height="100" rx="4" fill="#2d3748" stroke="#4a5568" stroke-width="1.5"/>
+  <text x="150" y="100" font-family="system-ui,sans-serif" font-size="12" font-weight="600" fill="#f7fafc" text-anchor="middle">TSKAnalyzer</text>
+
+  <rect x="50" y="110" width="60" height="45" rx="3" fill="#1a202c" stroke="#4a5568" stroke-width="1"/>
+  <text x="80" y="133" font-family="ui-monospace,monospace" font-size="11" fill="#f7fafc" text-anchor="middle">mmls</text>
+  <text x="80" y="147" font-family="system-ui,sans-serif" font-size="8" fill="#718096" text-anchor="middle">Partitions</text>
+
+  <rect x="120" y="110" width="60" height="45" rx="3" fill="#1a202c" stroke="#4a5568" stroke-width="1"/>
+  <text x="150" y="133" font-family="ui-monospace,monospace" font-size="11" fill="#f7fafc" text-anchor="middle">fsstat</text>
+  <text x="150" y="147" font-family="system-ui,sans-serif" font-size="8" fill="#718096" text-anchor="middle">FS stats</text>
+
+  <rect x="190" y="110" width="60" height="45" rx="3" fill="#1a202c" stroke="#4a5568" stroke-width="1"/>
+  <text x="220" y="133" font-family="ui-monospace,monospace" font-size="11" fill="#f7fafc" text-anchor="middle">fls</text>
+  <text x="220" y="147" font-family="system-ui,sans-serif" font-size="8" fill="#718096" text-anchor="middle">File listing</text>
+
+  <line x1="150" y1="180" x2="150" y2="200" stroke="#718096" stroke-width="1.5" marker-end="url(#a1)"/>
+
+  <rect x="90" y="200" width="120" height="30" rx="4" fill="#2d3748" stroke="#4a5568" stroke-width="1.5"/>
+  <text x="150" y="220" font-family="system-ui,sans-serif" font-size="11" fill="#f7fafc" text-anchor="middle">TSKAnalysis</text>
+
+  <line x1="150" y1="230" x2="150" y2="250" stroke="#718096" stroke-width="1.5" marker-end="url(#a1)"/>
+
+  <rect x="65" y="250" width="170" height="28" rx="4" fill="#1a365d" stroke="#4299e1" stroke-width="1.5"/>
+  <text x="150" y="270" font-family="system-ui,sans-serif" font-size="10" fill="#bee3f8" text-anchor="middle">EvidencePackage → HTTP POST</text>
+
+  <defs>
+    <marker id="a1" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 L2,4 Z" fill="#718096"/>
+    </marker>
+  </defs>
+</svg>

@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <!-- Background -->
+  <circle cx="60" cy="60" r="56" fill="#0d1a2d" stroke="#00FFFF" stroke-width="2"/>
+
+  <!-- Mole body - minimal geometric -->
+  <g fill="#FFFFFF">
+    <!-- Body -->
+    <ellipse cx="60" cy="55" rx="32" ry="28"/>
+    <!-- Head/snout -->
+    <ellipse cx="60" cy="75" rx="18" ry="14"/>
+    <!-- Snout tip -->
+    <ellipse cx="60" cy="88" rx="8" ry="6"/>
+  </g>
+
+  <!-- Nose -->
+  <ellipse cx="60" cy="92" rx="5" ry="4" fill="#00FFFF"/>
+
+  <!-- Tiny eyes (moles have small eyes) -->
+  <circle cx="50" cy="70" r="3" fill="#0d1a2d"/>
+  <circle cx="70" cy="70" r="3" fill="#0d1a2d"/>
+  <circle cx="50" cy="70" r="1.5" fill="#00FFFF"/>
+  <circle cx="70" cy="70" r="1.5" fill="#00FFFF"/>
+
+  <!-- Digging claws - left -->
+  <g stroke="#00FFFF" stroke-width="2.5" stroke-linecap="round" fill="none">
+    <path d="M22 50 L15 42"/>
+    <path d="M22 55 L12 52"/>
+    <path d="M22 60 L12 62"/>
+  </g>
+
+  <!-- Digging claws - right -->
+  <g stroke="#00FFFF" stroke-width="2.5" stroke-linecap="round" fill="none">
+    <path d="M98 50 L105 42"/>
+    <path d="M98 55 L108 52"/>
+    <path d="M98 60 L108 62"/>
+  </g>
+
+  <!-- Disk/partition layers being excavated -->
+  <g fill="none" stroke="#00FFFF" stroke-width="1.5" opacity="0.7">
+    <path d="M30 25 L90 25"/>
+    <path d="M25 32 L95 32"/>
+    <path d="M20 39 L100 39"/>
+  </g>
+
+  <!-- Partition indicators -->
+  <g fill="#00FFFF" opacity="0.8">
+    <rect x="35" y="22" width="8" height="4" rx="1"/>
+    <rect x="55" y="22" width="12" height="4" rx="1"/>
+    <rect x="78" y="22" width="6" height="4" rx="1"/>
+  </g>
+</svg>

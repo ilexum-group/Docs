@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 230" width="300" height="230">
+  <!-- Evidex Data Flow -->
+  <text x="150" y="15" font-family="system-ui,sans-serif" font-size="13" font-weight="600" fill="#f7fafc" text-anchor="middle">Evidex Data Flow</text>
+
+  <rect x="80" y="25" width="140" height="35" rx="4" fill="#2d3748" stroke="#4a5568" stroke-width="1.5"/>
+  <text x="150" y="48" font-family="system-ui,sans-serif" font-size="11" fill="#f7fafc" text-anchor="middle">File Path(s)</text>
+
+  <line x1="150" y1="60" x2="150" y2="80" stroke="#718096" stroke-width="1.5" marker-end="url(#a1)"/>
+
+  <rect x="50" y="80" width="200" height="45" rx="4" fill="#2d3748" stroke="#4a5568" stroke-width="1.5"/>
+  <text x="150" y="103" font-family="system-ui,sans-serif" font-size="12" font-weight="600" fill="#f7fafc" text-anchor="middle">Read-Only Check</text>
+  <text x="150" y="118" font-family="system-ui,sans-serif" font-size="9" fill="#718096" text-anchor="middle">Verify O_RDONLY access</text>
+
+  <line x1="150" y1="125" x2="150" y2="145" stroke="#718096" stroke-width="1.5" marker-end="url(#a1)"/>
+
+  <rect x="50" y="145" width="200" height="45" rx="4" fill="#2d3748" stroke="#4a5568" stroke-width="1.5"/>
+  <text x="150" y="168" font-family="system-ui,sans-serif" font-size="12" font-weight="600" fill="#f7fafc" text-anchor="middle">Hash Calculation</text>
+  <text x="150" y="183" font-family="system-ui,sans-serif" font-size="9" fill="#718096" text-anchor="middle">MD5 • SHA1 • SHA256 • SHA512</text>
+
+  <line x1="150" y1="190" x2="150" y2="210" stroke="#718096" stroke-width="1.5" marker-end="url(#a1)"/>
+
+  <rect x="50" y="210" width="200" height="45" rx="4" fill="#1a365d" stroke="#4299e1" stroke-width="1.5"/>
+  <text x="150" y="233" font-family="system-ui,sans-serif" font-size="11" font-weight="600" fill="#f7fafc" text-anchor="middle">Metadata Extraction</text>
+
+  <defs>
+    <marker id="a1" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 L2,4 Z" fill="#718096"/>
+    </marker>
+  </defs>
+</svg>

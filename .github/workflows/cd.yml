@@ -1,0 +1,74 @@
+name: CD - Deploy to Production
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  PM2_APP_NAME: ilexum-docs
+  PORT: 3001
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
+      - name: Create deployment package
+        run: |
+          mkdir -p deploy
+          cp -r .next deploy/
+          cp -r node_modules deploy/
+          cp -r public deploy/
+          tar -czf deploy.tar.gz deploy/
+
+      - name: Copy deployment package via SSH
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: deploy.tar.gz
+          target: /tmp
+          strip_components: 0
+
+      - name: Cleanup local files
+        run: rm -f deploy.tar.gz
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            # Create deployment directory
+            mkdir -p ${{ secrets.DEPLOY_PATH }}
+
+            # Upload and extract package
+            cd ${{ secrets.DEPLOY_PATH }}
+            tar -xzf /tmp/deploy.tar.gz
+
+            # Restart Next.js with pm2
+            cd ${{ secrets.DEPLOY_PATH }}/deploy
+            pm2 restart ${{ env.PM2_APP_NAME }} || pm2 start ./node_modules/.bin/next --name "${{ env.PM2_APP_NAME }}" -- start -p ${{ env.PORT }}
+
+            # Cleanup
+            rm -f /tmp/deploy.tar.gz

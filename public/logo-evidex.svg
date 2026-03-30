@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <!-- Background -->
+  <circle cx="60" cy="60" r="56" fill="#0d1a2d" stroke="#00FFFF" stroke-width="2"/>
+
+  <!-- Eagle head - geometric minimal -->
+  <g fill="#FFFFFF">
+    <!-- Head shape -->
+    <path d="M60 22 C80 22 92 38 92 55 C92 70 82 80 70 82 L65 82 L60 90 L55 82 L50 82 C38 80 28 70 28 55 C28 38 40 22 60 22Z"/>
+    <!-- Beak -->
+    <path d="M60 58 L52 68 L60 78 L68 68 Z" fill="#00FFFF"/>
+    <!-- Beak hook -->
+    <path d="M60 78 L60 85 L56 80 Z" fill="#00FFFF"/>
+  </g>
+
+  <!-- Eyes - sharp scanning -->
+  <g fill="#0d1a2d">
+    <circle cx="45" cy="48" r="8"/>
+    <circle cx="75" cy="48" r="8"/>
+  </g>
+  <g fill="#00FFFF">
+    <circle cx="47" cy="48" r="4"/>
+    <circle cx="77" cy="48" r="4"/>
+  </g>
+
+  <!-- Eyebrow ridge (fierce look) -->
+  <path d="M35 40 L50 44" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/>
+  <path d="M85 40 L70 44" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round"/>
+
+  <!-- Scanner/magnifying element -->
+  <g stroke="#00FFFF" stroke-width="2" fill="none">
+    <circle cx="92" cy="85" r="12"/>
+    <line x1="101" y1="94" x2="110" y2="103" stroke-width="3" stroke-linecap="round"/>
+  </g>
+
+  <!-- Metadata lines being scanned -->
+  <g stroke="#00FFFF" stroke-width="1.5" opacity="0.7">
+    <line x1="18" y1="75" x2="35" y2="75"/>
+    <line x1="18" y1="82" x2="30" y2="82"/>
+    <line x1="18" y1="89" x2="25" y2="89"/>
+  </g>
+
+  <!-- Hash symbol -->
+  <text x="20" y="102" font-family="monospace" font-size="8" fill="#00FFFF" opacity="0.8">#</text>
+</svg>

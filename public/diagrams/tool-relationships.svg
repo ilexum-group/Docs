@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 650 160" width="650" height="160">
+  <!-- Tool Relationships -->
+  <rect x="10" y="40" width="130" height="60" rx="4" fill="#2d3748" stroke="#4a5568" stroke-width="1.5"/>
+  <text x="75" y="67" font-family="system-ui,sans-serif" font-size="14" font-weight="600" fill="#f7fafc" text-anchor="middle">Bitex</text>
+  <text x="75" y="82" font-family="system-ui,sans-serif" font-size="10" fill="#a0aec0" text-anchor="middle">Disk Analysis</text>
+
+  <line x1="145" y1="70" x2="195" y2="70" stroke="#718096" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arr)"/>
+  <text x="170" y="62" font-family="system-ui,sans-serif" font-size="8" fill="#718096" text-anchor="middle">transmit</text>
+
+  <rect x="200" y="40" width="130" height="60" rx="4" fill="#2d3748" stroke="#4a5568" stroke-width="1.5"/>
+  <text x="265" y="67" font-family="system-ui,sans-serif" font-size="14" font-weight="600" fill="#f7fafc" text-anchor="middle">Evidex</text>
+  <text x="265" y="82" font-family="system-ui,sans-serif" font-size="10" fill="#a0aec0" text-anchor="middle">File Acquisition</text>
+
+  <line x1="335" y1="70" x2="385" y2="70" stroke="#718096" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arr)"/>
+  <text x="360" y="62" font-family="system-ui,sans-serif" font-size="8" fill="#718096" text-anchor="middle">transmit</text>
+
+  <rect x="390" y="40" width="130" height="60" rx="4" fill="#2d3748" stroke="#4a5568" stroke-width="1.5"/>
+  <text x="455" y="67" font-family="system-ui,sans-serif" font-size="14" font-weight="600" fill="#f7fafc" text-anchor="middle">Tracium</text>
+  <text x="455" y="82" font-family="system-ui,sans-serif" font-size="10" fill="#a0aec0" text-anchor="middle">System Forensics</text>
+
+  <path d="M 520 70 Q 550 70 550 95 L 550 115" fill="none" stroke="#718096" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <rect x="380" y="115" width="250" height="40" rx="4" fill="#1a365d" stroke="#4299e1" stroke-width="1.5"/>
+  <text x="505" y="140" font-family="system-ui,sans-serif" font-size="13" font-weight="600" fill="#f7fafc" text-anchor="middle">Processor - Central Server</text>
+
+  <defs>
+    <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 L2,4 Z" fill="#718096"/>
+    </marker>
+  </defs>
+</svg>
