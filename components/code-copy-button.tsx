@@ -9,6 +9,7 @@ export function CodeCopyButtons() {
       const preElements = document.querySelectorAll("article pre:not(.has-copy-btn)");
 
       preElements.forEach((pre) => {
+        const preEl = pre as HTMLElement;
         if (pre.classList.contains("has-copy-btn")) return;
 
         pre.classList.add("has-copy-btn");
@@ -49,8 +50,8 @@ export function CodeCopyButtons() {
           parent.classList.add("relative");
         }
 
-        pre.style.position = "relative";
-        pre.appendChild(button);
+        preEl.style.position = "relative";
+        preEl.appendChild(button);
       });
     }
 
