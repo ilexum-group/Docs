@@ -176,7 +176,7 @@ function MdxImage(props: React.ImgHTMLAttributes<HTMLImageElement>) {
     className,
   } = props;
 
-  if (!src) {
+  if (!src || typeof src !== "string") {
     return null;
   }
 
