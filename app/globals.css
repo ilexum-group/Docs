@@ -217,6 +217,11 @@
   content: none;
 }
 
+.prose :not(pre) > code {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
 .prose pre {
   background: var(--muted);
   padding: 1rem;
@@ -236,6 +241,13 @@
   border-collapse: collapse;
   margin-top: 1rem;
   margin-bottom: 1rem;
+}
+
+.prose img,
+.prose svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
 }
 
 .prose th, .prose td {

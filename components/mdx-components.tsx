@@ -4,6 +4,7 @@ import { CodeBlock } from "@/components/code-block";
 import { Callout } from "@/components/callout";
 import { ReactNode, createElement } from "react";
 import { Link as LinkIcon } from "lucide-react";
+import NextImage from "next/image";
 import Link from "next/link";
 
 function slugify(text: string): string {
@@ -149,6 +150,49 @@ function Anchor({
   );
 }
 
+function Table({
+  children,
+  className,
+  ...props
+}: React.TableHTMLAttributes<HTMLTableElement>) {
+  return (
+    <div className="my-6 w-full overflow-x-auto rounded-lg border border-border/60">
+      <table
+        {...props}
+        className={`min-w-[36rem] border-collapse ${className ?? ""}`.trim()}
+      >
+        {children}
+      </table>
+    </div>
+  );
+}
+
+function MdxImage(props: React.ImgHTMLAttributes<HTMLImageElement>) {
+  const {
+    src,
+    alt,
+    width,
+    height,
+    className,
+  } = props;
+
+  if (!src) {
+    return null;
+  }
+
+  return (
+    <NextImage
+      src={src}
+      alt={alt ?? ""}
+      width={typeof width === "number" ? width : 1200}
+      height={typeof height === "number" ? height : 675}
+      unoptimized
+      className={`h-auto max-w-full ${className ?? ""}`.trim()}
+      style={{ width: "100%", height: "auto" }}
+    />
+  );
+}
+
 export const mdxComponents = {
   h1: ({ children }: { children: ReactNode }) => (
     <Heading level={1}>{children}</Heading>
@@ -176,6 +220,8 @@ export const mdxComponents = {
     }
     return <code className={className} {...props}>{children}</code>;
   },
+  table: Table,
+  img: MdxImage,
   a: Anchor,
   Callout,
   wrapper: ({ children }: { children: ReactNode }) => <>{children}</>,
