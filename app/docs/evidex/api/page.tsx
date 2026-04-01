@@ -5,7 +5,7 @@ import remarkGfm from "remark-gfm";
 const mdxContent = `
 # Evidex API Reference
 
-Go API documentation for Evidex packages.
+Main APIs and data contracts used by Evidex.
 
 ## Module
 
@@ -20,7 +20,7 @@ github.com/ilexum-group/evidex
 \`\`\`go
 func NewAcquirer(
     custodyChain *models.CustodyChainEntry,
-    osImpl *os.OS,
+  os osWrapper.OS,
     metadataMgr *metadata.MetadataManager,
 ) *Acquirer
 \`\`\`
@@ -28,13 +28,20 @@ func NewAcquirer(
 ### AcquireFile
 
 \`\`\`go
-func (a *Acquirer) AcquireFile(filePath string) (*models.FileEvidence, error)
+func (a *Acquirer) AcquireFile(filePath string) error
 \`\`\`
 
 ### GetEvidencePackage
 
 \`\`\`go
-func (a *Acquirer) GetEvidencePackage() (*models.EvidencePackage, error)
+func (a *Acquirer) GetEvidencePackage() *models.EvidencePackage
+\`\`\`
+
+### Additional acquisition helpers
+
+\`\`\`go
+func (a *Acquirer) AcquireDirectory(dirPath string, recursive bool) error
+func (a *Acquirer) AcquireMultiple(filePaths []string) error
 \`\`\`
 
 ---
@@ -49,6 +56,20 @@ func NewMetadataManager(commandLogger CommandLogger) *MetadataManager
 
 ---
 
+## config Package
+
+\`\`\`go
+type Config struct {
+  FilePaths []string
+  Recursive bool
+  CaseID    string
+  ServerURL string
+  AuthToken string
+}
+\`\`\`
+
+---
+
 ## Usage Example
 
 \`\`\`go
@@ -59,22 +80,27 @@ import (
     "github.com/ilexum-group/evidex/internal/acquisition"
     "github.com/ilexum-group/evidex/internal/config"
     "github.com/ilexum-group/evidex/internal/metadata"
-    "github.com/ilexum-group/evidex/internal/os"
+  osWrapper "github.com/ilexum-group/evidex/internal/os"
     "github.com/ilexum-group/evidex/internal/sender"
     "github.com/ilexum-group/evidex/pkg/models"
 )
 
 func main() {
-    cfg, filePaths := config.ParseFlags()
+  cfg := config.ParseFlags()
+  if err := config.ValidateConfig(cfg); err != nil {
+    panic(err)
+  }
 
-    osImpl := os.New()
+  osImpl := osWrapper.New()
     custody := models.NewCustodyChainEntry("evidex", "1.0.4")
 
-    metadataMgr := metadata.NewMetadataManager(nil)
+  metadataMgr := metadata.NewMetadataManager(custody.LogCommand)
     acquirer := acquisition.NewAcquirer(custody, osImpl, metadataMgr)
 
-    file, _ := acquirer.AcquireFile(filePaths[0])
-    fmt.Printf("Acquired: %s\\n", file.Filename)
+  if err := acquirer.AcquireMultiple(cfg.FilePaths); err != nil {
+    panic(err)
+  }
+  fmt.Printf("Acquired files: %d\\n", acquirer.GetFileCount())
 
     pkg := acquirer.GetEvidencePackage()
     s := sender.NewSender(cfg.ServerURL, cfg.AuthToken)

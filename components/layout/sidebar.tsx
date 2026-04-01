@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronDown, ChevronRight } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { navigation, NavItem } from "@/lib/docs/navigation";
@@ -13,16 +13,29 @@ interface SidebarProps {
   onLinkClick?: () => void;
 }
 
+function isItemActive(item: NavItem, pathname: string): boolean {
+  if (item.href && pathname === item.href) {
+    return true;
+  }
+
+  if (!item.children) {
+    return false;
+  }
+
+  return item.children.some((child) => isItemActive(child, pathname));
+}
+
 function NavItemComponent({
   item,
-  isActive,
+  pathname,
   onLinkClick,
 }: {
   item: NavItem;
-  isActive: boolean;
+  pathname: string;
   onLinkClick?: () => void;
 }) {
-  const [isOpen, setIsOpen] = useState(isActive);
+  const active = isItemActive(item, pathname);
+  const [isOpen, setIsOpen] = useState(active);
 
   if (!item.children) {
     return (
@@ -30,9 +43,9 @@ function NavItemComponent({
         href={item.href!}
         onClick={onLinkClick}
         className={cn(
-          "flex items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-          isActive
-            ? "bg-accent text-accent-foreground"
+          "flex items-center rounded-lg px-3 py-2 text-sm transition-colors",
+          active
+            ? "bg-accent text-accent-foreground font-semibold"
             : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
         )}
       >
@@ -46,9 +59,9 @@ function NavItemComponent({
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          "flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-          isActive
-            ? "bg-accent text-accent-foreground"
+          "flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm transition-colors",
+          active
+            ? "bg-accent text-accent-foreground font-semibold"
             : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
         )}
       >
@@ -65,7 +78,7 @@ function NavItemComponent({
             <NavItemComponent
               key={child.href}
               item={child}
-              isActive={false}
+              pathname={pathname}
               onLinkClick={onLinkClick}
             />
           ))}
@@ -77,15 +90,16 @@ function NavItemComponent({
 
 export function Sidebar({ className, onLinkClick }: SidebarProps) {
   const pathname = usePathname();
+  const items = useMemo(() => navigation, []);
 
   return (
-    <ScrollArea className={cn("h-full py-6 px-4", className)}>
-      <nav className="space-y-1">
-        {navigation.map((item) => (
+    <ScrollArea className={cn("h-full px-4 py-6", className)}>
+      <nav className="space-y-1.5">
+        {items.map((item) => (
           <NavItemComponent
-            key={item.href || item.title}
+            key={`${pathname}-${item.href || item.title}`}
             item={item}
-            isActive={pathname === item.href}
+            pathname={pathname}
             onLinkClick={onLinkClick}
           />
         ))}

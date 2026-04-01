@@ -4,7 +4,7 @@ import { mdxComponents } from "@/components/mdx-components";
 const mdxContent = `
 # Examples
 
-Complete forensic workflows using the Ilexum tools.
+Complete forensic workflows using the Ilexum Group tools.
 
 ## Evidence Collection Pipeline
 

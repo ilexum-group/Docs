@@ -5,63 +5,75 @@ import remarkGfm from "remark-gfm";
 
 const mdxContent = `# Introduction
 
-Ilexum is an open-source suite of forensic tools designed for digital investigations and incident response. The suite consists of three complementary tools: **Bitex**, **Tracium**, and **Evidex**.
+Ilexum Group is an open-source forensic toolkit for incident response and digital investigations. It is composed of three focused binaries:
 
-## The Ecosystem
+- **Bitex** for disk metadata analysis through The Sleuth Kit (TSK)
+- **Tracium** for live or image-based system artifact collection
+- **Evidex** for read-only evidence acquisition and metadata extraction
 
-Each tool serves a specific purpose in the forensic workflow:
+## Why This Stack
+
+Most forensic pipelines need all three layers:
+
+1. Storage-level visibility
+2. Host-level activity artifacts
+3. File-level evidence packages
+
+Ilexum Group keeps these concerns separated, but aligned through a shared custody model and compatible payload design.
+
+## Product Map
 
 | Tool | Purpose | Input | Output |
 |------|---------|-------|--------|
-| **Bitex** | Disk analysis via The Sleuth Kit | Disk images/devices | Partition tables, filesystem metadata, file listings |
-| **Tracium** | System forensics collector | Live systems or forensic images | 16 categories of forensic artifacts |
-| **Evidex** | Evidence acquisition | Files and directories | Metadata-rich evidence packages |
+| **Bitex** | Metadata-first disk analysis with TSK | Disk images and block devices | Partition analysis, fs stats, file listings |
+| **Tracium** | Host and artifact acquisition | Live systems or mounted forensic images | \`SystemData\` + \`ForensicsData\` |
+| **Evidex** | Evidence package acquisition | Files/directories | \`EvidencePackage\` with hashes and metadata |
 
 <Callout type="info" title="Shared Architecture">
-All three tools share common design patterns: RFC 5424 compliant logging, chain of custody tracking, and HTTP transmission to remote analysis servers.
+All three tools use a shared custody-chain approach, RFC 5424 logging style, and authenticated HTTP transmission to remote analysis backends.
 </Callout>
 
-## Key Features
+## Core Forensic Guarantees
 
-- **Read-Only Operations**: All tools operate in strict read-only mode to preserve evidence integrity
-- **Chain of Custody**: Cryptographic hash verification (MD5, SHA1, SHA256) with complete audit trails
-- **Cross-Platform**: Linux, Windows, macOS, FreeBSD, and OpenBSD support
-- **Standards Compliant**: ISO 27037, NIST SP 800-86, and Daubert Standard compliant
-- **Dependency Injection**: Clean architecture with well-separated concerns
-- **Platform Abstraction**: Consistent interfaces with platform-specific implementations
+- **Read-only collection paths** across acquisition flows
+- **Cryptographic integrity checks** embedded in evidence/custody metadata
+- **End-to-end execution traceability** for commands and operations
+- **Cross-platform coverage** including Linux, Windows, macOS, FreeBSD, and OpenBSD
+- **Composable architecture** with explicit model contracts in each repository
 
-## Forensic Standards
+## Repository Modules
 
-The Ilexum tools are designed to meet established digital forensics standards:
+\`\`\`go
+github.com/ilexum-group/bitex
+github.com/ilexum-group/tracium
+github.com/ilexum-group/evidex
+\`\`\`
+
+## Typical Workflow
+
+\`\`\`text
+Bitex (disk metadata baseline)
+  -> Tracium (host timeline + artifacts)
+  -> Evidex (targeted file acquisition package)
+\`\`\`
+
+Use this sequence when you need both breadth (system context) and depth (high-value files) with complete custody traceability.
+
+## Standards Alignment
+
+The Ilexum Group tools are designed to meet established digital forensics standards:
 
 - **ISO 27037**: Guidelines for identification, collection, acquisition, and preservation of digital evidence
 - **NIST SP 800-86**: Guide to computer and network forensics
 - **Daubert Standard**: Admissibility requirements for scientific evidence
 
-## Tool Relationships
+## Navigation
 
-The three tools are designed to work together in a forensic workflow:
-
-![Tool Relationships](/diagrams/tool-relationships.svg)
-
-Each agent collects evidence and transmits it to a central Processor for analysis and correlation.
-
-## Go Module Structure
-
-\`\`\`go
-github.com/ilexum-group/bitex     // Disk analysis
-github.com/ilexum-group/tracium     // System forensics
-github.com/ilexum-group/evidex    // Evidence acquisition
-\`\`\`
-
-## Quick Navigation
-
-- [Getting Started](/docs/getting-started) - Install and configure the tools
-- [Architecture](/docs/architecture) - Deep dive into system design
-- [Bitex](/docs/bitex) - Disk analysis with The Sleuth Kit
-- [Tracium](/docs/tracium) - Comprehensive system forensics
-- [Evidex](/docs/evidex) - File evidence acquisition
-- [SDK Reference](/docs/sdk) - Common models and utilities
+- [Getting Started](/docs/getting-started)
+- [Bitex](/docs/bitex)
+- [Tracium](/docs/tracium)
+- [Evidex](/docs/evidex)
+- [API Reference Hub](/docs/api-reference)
 `;
 
 const components = { ...mdxComponents, Callout };

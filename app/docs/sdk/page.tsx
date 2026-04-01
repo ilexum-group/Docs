@@ -4,7 +4,7 @@ import { mdxComponents } from "@/components/mdx-components";
 const mdxContent = `
 # SDK Reference
 
-Common models and shared components across all Ilexum tools.
+Common models and shared components across all Ilexum Group tools.
 
 ## Shared Module
 

@@ -25,7 +25,7 @@ export function Navbar({ className }: NavbarProps) {
         className
       )}
     >
-      <div className="flex h-14 items-center px-4 md:px-6">
+      <div className="mx-auto flex h-14 w-full max-w-[1600px] items-center px-4 md:px-6">
         {/* Mobile menu */}
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger className="md:hidden mr-2 inline-flex items-center justify-center rounded-lg hover:bg-accent hover:text-accent-foreground h-9 w-9">
@@ -39,7 +39,7 @@ export function Navbar({ className }: NavbarProps) {
                 className="flex items-center gap-2 font-semibold"
                 onClick={() => setIsOpen(false)}
               >
-                <span className="text-xl font-bold tracking-tight">Ilexum</span>
+                <span className="text-lg font-bold tracking-tight">Ilexum Group Docs</span>
               </Link>
             </div>
             <Sidebar onLinkClick={() => setIsOpen(false)} className="border-0" />
@@ -51,33 +51,39 @@ export function Navbar({ className }: NavbarProps) {
           href="https://ilexumgroup.com"
           target="_blank"
           rel="noopener noreferrer"
-          className="hidden md:flex items-center gap-2 mr-6"
+          className="hidden md:flex items-center gap-2 mr-8"
         >
           <span className="text-xl font-bold tracking-tight">Ilexum Group</span>
           <span className="text-xs text-muted-foreground font-medium">
-            Forensic Tools
+            Developer Docs
           </span>
         </Link>
 
         {/* Desktop nav links */}
-        <nav className="hidden md:flex items-center gap-6 text-sm">
+        <nav className="hidden md:flex items-center gap-5 text-sm">
           <Link
             href="/docs/introduction"
-            className="text-muted-foreground hover:text-foreground transition-colors"
+            className="text-muted-foreground hover:text-foreground transition-colors font-medium"
           >
             Docs
           </Link>
           <Link
             href="/docs/api-reference"
-            className="text-muted-foreground hover:text-foreground transition-colors"
+            className="text-muted-foreground hover:text-foreground transition-colors font-medium"
           >
-            API
+            API Overview
+          </Link>
+          <Link
+            href="/docs/examples"
+            className="text-muted-foreground hover:text-foreground transition-colors font-medium"
+          >
+            Examples
           </Link>
           <Link
             href="https://github.com/ilexum-group"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-muted-foreground hover:text-foreground transition-colors"
+            className="text-muted-foreground hover:text-foreground transition-colors font-medium"
           >
             GitHub
           </Link>

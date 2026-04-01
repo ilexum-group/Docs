@@ -15,60 +15,78 @@ interface TableOfContentsProps {
   className?: string;
 }
 
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+}
+
 export function TableOfContents({ className }: TableOfContentsProps) {
   const [headings, setHeadings] = useState<Heading[]>([]);
   const [activeId, setActiveId] = useState<string>("");
   const pathname = usePathname();
 
   useEffect(() => {
-    setHeadings([]);
-    const timer = setTimeout(() => {
-      // Only look at headings inside the article element
-      const article = document.querySelector("article");
-      if (!article) return;
+    const collectHeadings = () => {
+      const article = document.querySelector("main article");
+      if (!article) {
+        setHeadings([]);
+        return;
+      }
 
-      const headingElements = article.querySelectorAll("h1, h2, h3, h4");
-
-      const headingData: Heading[] = [];
+      const headingElements = article.querySelectorAll<HTMLElement>("h1, h2, h3, h4");
       const usedIds = new Set<string>();
 
-      headingElements.forEach((el) => {
-        let id = el.id;
-        if (!id || id === "") {
-          const text = el.textContent || "";
-          id = text
-            .toLowerCase()
-            .replace(/[^a-z0-9\s-]/g, "")
-            .replace(/\s+/g, "-")
-            .replace(/-+/g, "-")
-            .replace(/^-|-$/g, "");
-        }
+      const headingData = Array.from(headingElements)
+        .map((el) => {
+          const text = (el.textContent || "").trim();
+          if (!text) {
+            return null;
+          }
 
-        // Ensure unique ID
-        let uniqueId = id;
-        let counter = 1;
-        while (usedIds.has(uniqueId)) {
-          uniqueId = `${id}-${counter}`;
-          counter++;
-        }
-        usedIds.add(uniqueId);
+          let id = (el.id || "").trim();
+          if (!id) {
+            id = slugify(text);
+          }
 
-        // Update DOM element if we changed the ID
-        if (id !== uniqueId) {
-          el.id = uniqueId;
-        }
+          if (!id) {
+            return null;
+          }
 
-        headingData.push({
-          id: uniqueId,
-          text: el.textContent || "",
-          level: parseInt(el.tagName.charAt(1)),
-        });
-      });
+          let uniqueId = id;
+          let suffix = 1;
+          while (usedIds.has(uniqueId)) {
+            uniqueId = `${id}-${suffix}`;
+            suffix += 1;
+          }
+
+          usedIds.add(uniqueId);
+          if (el.id !== uniqueId) {
+            el.id = uniqueId;
+          }
+
+          return {
+            id: uniqueId,
+            text,
+            level: Number.parseInt(el.tagName.charAt(1), 10),
+          };
+        })
+        .filter((heading): heading is Heading => heading !== null);
 
       setHeadings(headingData);
-    }, 300);
+      if (headingData.length > 0) {
+        setActiveId(headingData[0].id);
+      }
+    };
 
-    return () => clearTimeout(timer);
+    collectHeadings();
+    const observer = new MutationObserver(collectHeadings);
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    return () => observer.disconnect();
   }, [pathname]);
 
   useEffect(() => {
@@ -94,7 +112,7 @@ export function TableOfContents({ className }: TableOfContentsProps) {
   if (headings.length === 0) {
     return (
       <div className="px-4 py-6">
-        <h4 className="text-sm font-semibold mb-4 text-foreground">
+        <h4 className="mb-4 text-sm font-semibold text-foreground">
           On this page
         </h4>
         <p className="text-sm text-muted-foreground">No headings</p>
@@ -105,7 +123,7 @@ export function TableOfContents({ className }: TableOfContentsProps) {
   return (
     <ScrollArea className={cn("h-full", className)}>
       <div className="px-4 py-6">
-        <h4 className="text-sm font-semibold mb-4 text-foreground">
+        <h4 className="mb-4 text-sm font-semibold text-foreground">
           On this page
         </h4>
         <nav className="space-y-2">
@@ -114,13 +132,13 @@ export function TableOfContents({ className }: TableOfContentsProps) {
               key={heading.id}
               href={`#${heading.id}`}
               className={cn(
-                "block text-sm transition-colors py-1",
+                "block py-1 text-sm leading-6 transition-colors",
                 heading.level === 1 && "font-medium",
                 heading.level === 2 && "pl-0",
                 heading.level === 3 && "pl-3",
                 heading.level === 4 && "pl-6",
                 activeId === heading.id
-                  ? "text-foreground font-medium"
+                  ? "text-foreground font-semibold"
                   : "text-muted-foreground hover:text-foreground"
               )}
             >

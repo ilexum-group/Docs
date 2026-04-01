@@ -6,15 +6,46 @@ import remarkGfm from "remark-gfm";
 const mdxContent = `
 # Evidex
 
-Evidex is a forensic evidence acquisition tool that collects files and their metadata in a forensically sound manner.
+Evidex is the evidence acquisition binary for targeted file collection with metadata enrichment and custody-chain tracking.
 
 ## Overview
 
-Evidex operates in **strict read-only mode** to preserve evidence integrity. It calculates cryptographic hashes, extracts metadata based on file type, and assembles evidence packages.
+Evidex acquires files in read-only mode, computes hashes, extracts format-specific metadata, and builds an \`EvidencePackage\` for transmission.
 
 <Callout type="danger" title="Read-Only Guarantee">
-Evidex never modifies source files. All file access uses O_RDONLY.
+Source files are never modified. Acquisition paths rely on read-only access and explicit custody logging.
 </Callout>
+
+## Core Package Model
+
+\`\`\`go
+type EvidencePackage struct {
+  CaseID       string
+  Files        []*FileEvidence
+  CustodyChain *CustodyChainEntry
+}
+\`\`\`
+
+\`\`\`go
+type FileEvidence struct {
+  SourcePath      string
+  RelativePath    string
+  Filename        string
+  FileSize        int64
+  FileMode        uint32
+  AccessedTime    time.Time
+  ModifiedTime    time.Time
+  CreatedTime     time.Time
+  ChangeTime      time.Time
+  Owner           string
+  Group           string
+  FileType        string
+  Hashes          *FileHashes
+  ImageMetadata   *ImageMetadata
+  VideoMetadata   *VideoMetadata
+  GenericMetadata map[string]string
+}
+\`\`\`
 
 ## What Evidex Collects
 
@@ -28,38 +59,33 @@ Evidex never modifies source files. All file access uses O_RDONLY.
 - MD5, SHA1, SHA256, SHA512
 
 ### Format-Specific Metadata
-Based on file type:
+Based on extractor registration and MIME/file-type detection:
 - **Images** (JPEG, PNG, GIF) - Dimensions, EXIF data
 - **Video** (MP4, MOV, AVI, MKV) - Duration, codecs, frame rate
 - **Documents** (PDF) - Page count, author, title
 - **Archives** (ZIP, TAR, GZIP) - File count, compression
 - **Executables** (PE, ELF, Mach-O) - Architecture, entry point
 
-## Key Structs
+## Extractor Architecture
 
-### EvidencePackage
+Evidex implements a metadata extraction layer with interfaces and registries:
 
-\`\`\`go
-type EvidencePackage struct {
-    CaseID       string
-    Files        []FileEvidence
-    CustodyChain *CustodyChainEntry
-}
-\`\`\`
+- \`MetadataExtractor\`
+- \`ImageExtractor\`
+- \`VideoExtractor\`
+- \`DocumentExtractor\`
+- \`ExtractorRegistry\`
 
-### FileEvidence
+## Typical CLI Commands
 
-\`\`\`go
-type FileEvidence struct {
-    SourcePath     string
-    Filename      string
-    FileSize      int64
-    FileMode      string
-    Hashes        *FileHashes
-    ImageMetadata *ImageMetadata
-    VideoMetadata *VideoMetadata
-    // ...
-}
+\`\`\`bash
+# Single file
+./build/evidex --server https://forensics.example/api/evidence \
+  --token YOUR_TOKEN --case-id CASE-2026-001 image.jpg
+
+# Recursive acquisition
+./build/evidex --server https://forensics.example/api/evidence \
+  --token YOUR_TOKEN --case-id CASE-2026-001 -r /evidence
 \`\`\`
 `;
 

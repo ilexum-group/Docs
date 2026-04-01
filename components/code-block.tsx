@@ -79,6 +79,7 @@ export function CodeBlock({
 
   return (
     <div
+      data-codeblock="true"
       className={cn(
         "group relative overflow-hidden rounded-lg border border-border/50 bg-[#0d1117]",
         className

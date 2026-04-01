@@ -1,5 +1,4 @@
 import type { MDXComponents } from "mdx/types";
-import { CodeBlock } from "./components/code-block";
 import { Callout } from "./components/callout";
 import Link from "next/link";
 

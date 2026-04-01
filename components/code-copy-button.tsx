@@ -5,12 +5,15 @@ import { useEffect } from "react";
 export function CodeCopyButtons() {
   useEffect(() => {
     function addCopyButtons() {
-      // Find all pre elements that don't already have a copy button
+      // Find all raw pre elements that are not already handled by our custom CodeBlock.
       const preElements = document.querySelectorAll("article pre:not(.has-copy-btn)");
 
       preElements.forEach((pre) => {
         const preEl = pre as HTMLElement;
         if (pre.classList.contains("has-copy-btn")) return;
+
+        // Skip blocks rendered by our custom CodeBlock component.
+        if (pre.closest('[data-codeblock="true"]')) return;
 
         pre.classList.add("has-copy-btn");
 

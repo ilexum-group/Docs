@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { navigation } from "@/lib/docs/navigation";
 import { useRouter } from "next/navigation";
@@ -75,35 +75,27 @@ function XIcon({ className }: { className?: string }) {
 export function SearchCommand({ open, onOpenChange }: SearchCommandProps) {
   const router = useRouter();
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<FlatLink[]>([]);
+  const allLinks = useMemo(() => flattenNavigation(navigation), []);
 
-  const allLinks = flattenNavigation(navigation);
-
-  useEffect(() => {
-    if (query.trim() === "") {
-      setResults(allLinks);
-    } else {
-      const filtered = allLinks.filter(
-        (link) =>
-          link.title.toLowerCase().includes(query.toLowerCase()) ||
-          link.href.toLowerCase().includes(query.toLowerCase())
-      );
-      setResults(filtered);
+  const results = useMemo(() => {
+    const normalized = query.trim().toLowerCase();
+    if (normalized === "") {
+      return allLinks;
     }
-  }, [query]);
+
+    return allLinks.filter(
+      (link) =>
+        link.title.toLowerCase().includes(normalized) ||
+        link.href.toLowerCase().includes(normalized) ||
+        link.category?.toLowerCase().includes(normalized)
+    );
+  }, [allLinks, query]);
 
   const handleSelect = (href: string) => {
     router.push(href);
     onOpenChange(false);
     setQuery("");
   };
-
-  useEffect(() => {
-    if (open) {
-      setResults(allLinks);
-      setQuery("");
-    }
-  }, [open]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -117,7 +109,7 @@ export function SearchCommand({ open, onOpenChange }: SearchCommandProps) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
-            autoFocus
+            autoFocus={open}
           />
           {query && (
             <button

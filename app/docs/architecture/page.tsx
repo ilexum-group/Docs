@@ -6,7 +6,7 @@ import remarkGfm from "remark-gfm";
 const mdxContent = `
 # Architecture
 
-This document describes the architectural patterns and data flows shared across all Ilexum forensic tools.
+This document describes the architectural patterns and data flows shared across all Ilexum Group forensic tools.
 
 ## Shared Design Principles
 

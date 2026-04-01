@@ -1,40 +1,102 @@
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { mdxComponents } from "@/components/mdx-components";
 import { Callout } from "@/components/callout";
-import { CodeBlock } from "@/components/code-block";
 import remarkGfm from "remark-gfm";
 
 const mdxContent = `
 # Getting Started
 
-This guide will help you install and configure the Ilexum forensic tools.
+This guide gets Bitex, Tracium, and Evidex running with real command patterns used by each project.
 
 ## Prerequisites
 
-- **Go 1.25+**: All tools are written in Go and require the Go toolchain
-- **The Sleuth Kit (TSK)**: Required for Bitex disk analysis
+- **Go 1.25+**
+- **Make** (recommended)
+- **The Sleuth Kit (TSK)** for Bitex
   - Ubuntu/Debian: \`sudo apt install sleuthkit\`
   - macOS: \`brew install sleuthkit\`
   - Windows: Download from [sleuthkit.org](https://www.sleuthkit.org/)
 
-## Installation
+## Clone And Build
 
-### From Source
-
-Clone each repository and build:
+Build each project from source:
 
 \`\`\`bash
 # Bitex
 git clone https://github.com/ilexum-group/Bitex.git
-cd Bitex && go build -o bitex ./cmd/bitex
+cd Bitex
+make build
 
 # Tracium
 git clone https://github.com/ilexum-group/Tracium.git
-cd Tracium && go build -o tracium ./cmd/tracium
+cd Tracium
+make build
 
 # Evidex
 git clone https://github.com/ilexum-group/Evidex.git
-cd Evidex && go build -o evidex ./cmd/evidex
+cd Evidex
+make build
+\`\`\`
+
+Expected output binaries:
+
+- Bitex: \`build/bitex\` or \`build\\bitex.exe\`
+- Tracium: \`build/tracium\` or \`build\\tracium.exe\`
+- Evidex: \`build/evidex\` or \`build\\evidex.exe\`
+
+## Shared Required Flags
+
+All tools require these forensic correlation flags:
+
+- \`--server\` endpoint
+- \`--token\` authentication token
+- \`--case-id\` case correlation ID
+
+Tool-specific required flags:
+
+- Bitex: \`--disk\`
+- Evidex: at least one file or directory path (plus optional \`-r\`)
+- Tracium: optional \`--image\` for post-mortem image mode
+
+## First Run Commands
+
+### Bitex
+
+\`\`\`bash
+./build/bitex --disk /dev/sda --case-id CASE-2026-001 \
+  --server https://forensics.example/api/analysis \
+  --token YOUR_TOKEN
+\`\`\`
+
+### Tracium (live collection)
+
+\`\`\`bash
+./build/tracium --server https://forensics.example/api/v1/tracium/data \
+  --token YOUR_TOKEN --case-id CASE-2026-001
+\`\`\`
+
+### Tracium (image mode)
+
+\`\`\`bash
+./build/tracium --server https://forensics.example/api/v1/tracium/data \
+  --token YOUR_TOKEN --case-id CASE-2026-001 \
+  --image /mnt/images/disk.dd
+\`\`\`
+
+### Evidex
+
+\`\`\`bash
+./build/evidex --server https://forensics.example/api/evidence \
+  --token YOUR_TOKEN --case-id CASE-2026-001 \
+  -r /mnt/evidence
+\`\`\`
+
+## Verify Binaries
+
+\`\`\`bash
+./build/bitex --version
+./build/tracium -v
+./build/evidex --version
 \`\`\`
 
 ### Pre-built Binaries
@@ -44,91 +106,17 @@ Download pre-built binaries from the GitHub releases page for your platform.
 <Callout type="tip" title="Cross-Platform Builds">
 Use the provided Makefiles to build for multiple platforms:
 \`\`\`bash
-make build-all   # Builds for all platforms
-make build-linux # Linux only
+make build-all
+make build-linux
+make build-windows
 \`\`\`
 </Callout>
 
-## Configuration
-
-All three tools share common command-line flags:
-
-| Flag | Description | Required |
-|------|-------------|----------|
-| \`--server\` | Remote server URL | Yes |
-| \`--token\` | Authentication token | Yes |
-| \`--case-id\` | Case identifier | Yes |
-
-### Example Configuration
-
-\`\`\`bash
-# Bitex - Analyze a disk image
-./bitex --disk /dev/sdb --case-id CASE-2024-001 \\
-  --server https://forensics.example.com \\
-  --token YOUR_AUTH_TOKEN
-
-# Tracium - Collect system forensics
-./tracium --case-id CASE-2024-001 \\
-  --server https://forensics.example.com \\
-  --token YOUR_AUTH_TOKEN
-
-# Evidex - Acquire evidence files
-./evidex --case-id CASE-2024-001 \\
-  --server https://forensics.example.com \\
-  --token YOUR_AUTH_TOKEN \\
-  -r /evidence/*
-\`\`\`
-
-## Quick Start
-
-### 1. Start with Bitex
-
-Analyze a disk image to understand the partition structure:
-
-\`\`\`bash
-./bitex --disk disk-image.aff --case-id MYCASE-001 \\
-  --server http://localhost:8080 --token mytoken
-\`\`\`
-
-### 2. Collect Files with Evidex
-
-Acquire specific files of interest:
-
-\`\`\`bash
-./evidex --case-id MYCASE-001 \\
-  --server http://localhost:8080 --token mytoken \\
-  -r /mount/evidence/documents/
-\`\`\`
-
-### 3. Gather System Data with Tracium
-
-Collect comprehensive system artifacts:
-
-\`\`\`bash
-./tracium --case-id MYCASE-001 \\
-  --server http://localhost:8080 --token mytoken
-\`\`\`
-
-## Verifying Installation
-
-Run the built-in validation:
-
-\`\`\`bash
-# Bitex validation
-./bitex --version
-
-# Tracium validation
-./tracium --version
-
-# Evidex validation
-./evidex --version
-\`\`\`
-
 ## Next Steps
 
-- Read the [Architecture](/docs/architecture) documentation
-- Explore each tool's detailed documentation
-- Review [Examples](/docs/examples) for common workflows
+- Read [Architecture](/docs/architecture)
+- Continue with [Bitex](/docs/bitex), [Tracium](/docs/tracium), and [Evidex](/docs/evidex)
+- Review [Examples](/docs/examples) for workflow-oriented usage
 `;
 
 const components = { ...mdxComponents, Callout };

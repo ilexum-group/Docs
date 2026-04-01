@@ -5,7 +5,7 @@ import remarkGfm from "remark-gfm";
 const mdxContent = `
 # Tracium API Reference
 
-Go API documentation for Tracium packages.
+Main package-level references for Tracium based on the current repository.
 
 ## Module
 
@@ -17,42 +17,58 @@ github.com/ilexum-group/tracium
 
 | Package | Purpose |
 |---------|---------|
-| \`config\` | CLI flag parsing |
-| \`acquisition\` | System data collection |
-| \`forensics\` | Forensic artifact collection |
-| \`sender\` | HTTP transmission |
+| \`internal/config\` | CLI flag parsing and validation |
+| \`internal/acquisition\` | System/hardware/network/security collection |
+| \`internal/forensics\` | Artifact collection orchestration |
+| \`internal/os\` | Collector interface and OS-specific implementations |
+| \`internal/sender\` | HTTP transmission |
 | \`pkg/models\` | Data structures |
 
 ---
 
-## acquisition Package
+## internal/acquisition
 
 ### New
 
 \`\`\`go
-func New(collector *os.Collector, custody *models.CustodyChainEntry) *Acquisition
+func New(collector osinfo.Collector, custodyChain *models.CustodyChainEntry, forensicsCollector *forensics.Forensics) *Acquisition
 \`\`\`
 
 ### Acquire
 
 \`\`\`go
-func (a *Acquisition) Acquire() (*models.SystemData, error)
+func (a *Acquisition) Acquire() models.SystemData
 \`\`\`
 
 ---
 
-## forensics Package
+## internal/forensics
 
 ### New
 
 \`\`\`go
-func New(collector *os.Collector, custody *models.CustodyChainEntry) *Forensics
+func New(collector osinfo.Collector, custodyChain *models.CustodyChainEntry) *Forensics
 \`\`\`
 
 ### Collect
 
 \`\`\`go
-func (f *Forensics) Collect() (*models.ForensicsData, error)
+func (f *Forensics) Collect() models.ForensicsData
+\`\`\`
+
+---
+
+## internal/config
+
+### Config Struct
+
+\`\`\`go
+type Config struct {
+  ServerURL  string
+  AgentToken string
+  CaseID     string
+  ImagePath  string
+}
 \`\`\`
 
 ---
@@ -67,7 +83,7 @@ import (
     "github.com/ilexum-group/tracium/internal/acquisition"
     "github.com/ilexum-group/tracium/internal/config"
     "github.com/ilexum-group/tracium/internal/forensics"
-    "github.com/ilexum-group/tracium/internal/os"
+  osinfo "github.com/ilexum-group/tracium/internal/os"
     "github.com/ilexum-group/tracium/internal/sender"
     "github.com/ilexum-group/tracium/pkg/models"
 )
@@ -75,15 +91,13 @@ import (
 func main() {
     cfg := config.ParseFlags()
 
-    collector := os.New()
+  collector := osinfo.New()
     custody := models.NewCustodyChainEntry("tracium", "1.0.0")
+  f := forensics.New(collector, custody)
 
-    acq := acquisition.New(collector, custody)
-    systemData, _ := acq.Acquire()
-
-    f := forensics.New(collector, custody)
-    forensicsData, _ := f.Collect()
-    systemData.Forensics = *forensicsData
+  acq := acquisition.New(collector, custody, f)
+  systemData := acq.Acquire()
+  systemData.CaseID = cfg.CaseID
 
     s := sender.New(cfg.ServerURL, cfg.AgentToken)
     s.SendData(systemData)

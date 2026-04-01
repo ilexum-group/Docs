@@ -6,15 +6,53 @@ import remarkGfm from "remark-gfm";
 const mdxContent = `
 # Tracium
 
-Tracium is a comprehensive system forensics tool that collects 16 categories of forensic artifacts from live systems or forensic images.
+Tracium is the endpoint and artifact collector in the Ilexum Group ecosystem. It gathers system telemetry plus forensic artifacts from live systems or mounted forensic images.
 
 ## Overview
 
-Tracium gathers extensive system and user activity data through platform-specific collectors. It captures browser history, command shells, USB devices, network activity, and much more.
+Tracium is organized around an OS-specific \`Collector\` interface and a shared \`SystemData\` model, enabling consistent payloads across Linux, Windows, macOS, FreeBSD, and OpenBSD.
 
 <Callout type="info" title="Scope">
-Tracium is designed for incident response and digital investigations.
+Designed for incident response, triage, and post-mortem evidence collection workflows.
 </Callout>
+
+## Core Data Model
+
+\`\`\`go
+type SystemData struct {
+  CaseID       string
+  System       SystemInfo
+  Hardware     HardwareInfo
+  Network      NetworkInfo
+  Security     SecurityInfo
+  Forensics    ForensicsData
+  Tree         FilesystemTree
+  CustodyChain *CustodyChainEntry
+}
+\`\`\`
+
+## Collector Interface (Real Excerpt)
+
+\`\`\`go
+type Collector interface {
+  OSName() string
+  Architecture() string
+  Hostname() (string, error)
+  GetCurrentUser() (string, error)
+  GetProcessID() int
+
+  GetUptime() int64
+  GetUsers() []string
+  GetCPUInfo() models.CPUInfo
+  GetMemoryInfo() models.MemoryInfo
+  GetDiskInfo() []models.DiskInfo
+
+  CollectBrowserArtifacts(errors *[]string) models.BrowserArtifacts
+  CollectCommandHistory(errors *[]string) []models.CommandEntry
+  CollectSystemLogs(errors *[]string) []models.LogFile
+  CollectFilesystemTree() models.FilesystemTree
+}
+\`\`\`
 
 ## What Tracium Collects
 
@@ -42,37 +80,17 @@ Tracium is designed for incident response and digital investigations.
 15. **Download History** - Browser downloads
 16. **Active Connections** - Established connections, listening ports
 
-## Key Structs
+## Typical CLI Commands
 
-### SystemData
+\`\`\`bash
+# Live collection
+./build/tracium --server https://forensics.example/api/v1/tracium/data \
+  --token YOUR_TOKEN --case-id CASE-2026-001
 
-\`\`\`go
-type SystemData struct {
-    CaseID       string
-    System       SystemInfo
-    Hardware     HardwareInfo
-    Network      NetworkInfo
-    Security     SecurityInfo
-    Forensics    ForensicsData
-    Tree         FilesystemTree
-    CustodyChain *CustodyChainEntry
-}
-\`\`\`
-
-### Collector Interface
-
-\`\`\`go
-type Collector interface {
-    OSName() string
-    Architecture() string
-    Hostname() (string, error)
-    GetCurrentUser() (string, error)
-    GetProcessID() int
-    GetUptime() int64
-    GetCPUInfo() CPUInfo
-    GetMemoryInfo() MemoryInfo
-    // ... 30+ more methods
-}
+# Image-based post-mortem mode
+./build/tracium --server https://forensics.example/api/v1/tracium/data \
+  --token YOUR_TOKEN --case-id CASE-2026-001 \
+  --image /mnt/images/disk.dd
 \`\`\`
 `;
 

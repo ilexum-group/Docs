@@ -3,13 +3,32 @@
 import { CodeBlock } from "@/components/code-block";
 import { Callout } from "@/components/callout";
 import { ReactNode, createElement } from "react";
+import { Link as LinkIcon } from "lucide-react";
 import Link from "next/link";
 
 function slugify(text: string): string {
   return text
     .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
     .replace(/\s+/g, "-")
-    .replace(/[^\w-]+/g, "");
+    .replace(/-+/g, "-");
+}
+
+function nodeText(children: ReactNode): string {
+  if (typeof children === "string" || typeof children === "number") {
+    return String(children);
+  }
+
+  if (Array.isArray(children)) {
+    return children.map((child) => nodeText(child)).join(" ");
+  }
+
+  if (children && typeof children === "object" && "props" in children) {
+    return nodeText((children as { props?: { children?: ReactNode } }).props?.children);
+  }
+
+  return "";
 }
 
 function Heading({
@@ -19,13 +38,26 @@ function Heading({
   level: 1 | 2 | 3 | 4;
   children: ReactNode;
 }) {
-  const text = String(children);
+  const text = nodeText(children);
   const id = slugify(text);
 
   return createElement(
     `h${level}`,
-    { id, className: "scroll-mt-20" },
-    createElement("a", { href: `#${id}`, className: "hover:underline" }, children)
+    { id, className: "group scroll-mt-20" },
+    createElement(
+      "a",
+      {
+        href: `#${id}`,
+        className:
+          "inline-flex items-center gap-2 no-underline hover:no-underline",
+      },
+      children,
+      createElement(LinkIcon, {
+        className:
+          "h-4 w-4 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100",
+        "aria-hidden": true,
+      })
+    )
   );
 }
 
@@ -61,8 +93,6 @@ function Pre({
     }
   }
 
-  // Test: Always show CodeBlock if we have code, or show fallback with children
-  // TODO: Remove this comment after testing
   if (code) {
     return (
       <CodeBlock code={code} language={language} />

@@ -6,24 +6,50 @@ import remarkGfm from "remark-gfm";
 const mdxContent = `
 # Bitex
 
-Bitex is a forensic disk analysis tool that uses The Sleuth Kit (TSK) to extract metadata from disk images and block devices in a forensically sound manner.
+Bitex is the disk-analysis component of the Ilexum Group stack. It wraps The Sleuth Kit (TSK) to extract metadata from disk images and block devices in a forensically defensible way.
 
 ## Overview
 
-Bitex performs comprehensive disk analysis by invoking TSK command-line tools and parsing their output into structured data. It operates in **read-only mode** to preserve evidence integrity.
+Bitex runs metadata-oriented TSK commands (\`mmls\`, \`fsstat\`, \`fls\`, \`istat\`) and stores the parsed output in strongly typed Go models.
 
 <Callout type="info" title="Key Feature">
-Bitex never modifies the source disk. All operations use read-only access, and every command executed is logged to the custody chain.
+Bitex does not write to the source disk and records command execution details in custody-chain entries.
 </Callout>
 
-## What Bitex Collects
+## Main Output Model
+
+\`\`\`go
+type TSKAnalysis struct {
+  DiskPath        string
+  Partitions      []PartitionAnalysis
+  FilesystemStats *TSKFilesystemStats // deprecated compatibility field
+  FileListing     []TSKFileEntry      // deprecated compatibility field
+  ToolVersions    map[string]string
+  CaseID          string
+  CustodyChain    *CustodyChainEntry
+}
+\`\`\`
+
+\`\`\`go
+type PartitionAnalysis struct {
+  PartitionNumber int
+  StartSector     uint64
+  EndSector       uint64
+  Length          uint64
+  Description     string
+  FilesystemStats *TSKFilesystemStats
+  FileListing     []TSKFileEntry
+}
+\`\`\`
+
+## Collection Scope
 
 ### Partition Analysis
 
 - Partition table detection and parsing
 - Partition boundaries (start/end sectors)
 - Partition type descriptions
-- filesystem metadata per partition
+- Filesystem metadata per partition
 
 ### Filesystem Metadata
 
@@ -42,69 +68,30 @@ Bitex never modifies the source disk. All operations use read-only access, and e
 
 ### Tool Versions
 
-Bitex captures versions of all TSK tools used:
+Bitex records tool versions in \`TSKAnalysis.ToolVersions\`:
 - \`mmls\` - Partition list
 - \`fsstat\` - Filesystem statistics
 - \`fls\` - File listing
 - \`istat\` - Inode statistics
 
-## Architecture
+## Core Components
 
-Bitex integrates with The Sleuth Kit through command execution:
+- \`internal/tsk\`: \`Analyzer\` and \`AnalyzeDisk(diskPath string)\`
+- \`internal/acquisition\`: \`Acquirer\`, \`AcquireDisk()\`, \`GetAnalysisWithCustody(...)\`
+- \`internal/config\`: \`ParseFlags()\`, \`ValidateConfig(...)\`
+- \`pkg/models\`: TSK and custody chain models
 
-![TSKAnalyzer](/diagrams/tskanalyzer-arch.svg)
+## Typical CLI Flow
 
-## Key Structs
-
-### TSKAnalysis
-
-\`\`\`go
-type TSKAnalysis struct {
-    DiskPath        string
-    Partitions      []PartitionAnalysis
-    ToolVersions    map[string]string
-    CaseID          string
-    CustodyChain    *CustodyChainEntry
-}
-\`\`\`
-
-### PartitionAnalysis
-
-\`\`\`go
-type PartitionAnalysis struct {
-    PartitionNumber int
-    StartSector     uint64
-    EndSector       uint64
-    Length          uint64
-    Description     string
-    FilesystemStats *TSKFilesystemStats
-    FileListing     []TSKFileEntry
-}
-\`\`\`
-
-### TSKFileEntry
-
-\`\`\`go
-type TSKFileEntry struct {
-    Path            string
-    Inode           uint64
-    Type            string      // reg, dir, symlink, etc.
-    Size            int64
-    ModifiedTime    int64
-    AccessedTime    int64
-    CreatedTime     int64
-    DeletionTime    int64
-    Permissions     string
-    UID             int
-    GID             int
-    Deleted         bool
-    PartitionNumber int
-}
+\`\`\`bash
+./build/bitex --disk /dev/sda --case-id CASE-2026-001 \
+  --server https://forensics.example/api/analysis \
+  --token YOUR_TOKEN
 \`\`\`
 
 ## Supported Filesystems
 
-Bitex supports any filesystem supported by The Sleuth Kit, including:
+Bitex supports filesystems exposed by your installed TSK build, including:
 
 - **Windows**: NTFS, FAT, exFAT
 - **Linux**: ext2, ext3, ext4, XFS, Btrfs
@@ -118,11 +105,11 @@ See the [Bitex CLI Reference](/docs/bitex/cli) for detailed flag documentation.
 
 ## API Reference
 
-See the [Bitex API Reference](/docs/bitex/api) for Go struct documentation.
+See the [Bitex API Reference](/docs/bitex/api) for package-level signatures and model examples.
 
 ## Examples
 
-See the [Bitex Examples](/docs/bitex/examples) for usage patterns.
+See the [Bitex Examples](/docs/bitex/examples) for operational scenarios.
 `;
 
 const components = { ...mdxComponents, Callout };
